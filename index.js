@@ -1,94 +1,132 @@
-const SlackBot = require('slackbots');
-const axios = require('axios');
+// "axios": "^0.18.1",
+    // "slackbot": "0.0.2",
+    // "slackbots": "^1.1.0"
 
-const bot = new SlackBot({
-  token: 'xoxb-YOUR-OWN-TOKEN',
-  name: 'jokebot'
+ const { WebClient } = require('@slack/web-api')
+ const token = 'xoxb-741873925540-742344171200-uG1k97cvdIVWOQCu3YmoEw2G';
+ const web = new WebClient(token);
+
+const { createEventAdapter } = require('@slack/events-api');
+const slackSigningSecret = '7c3f6ece3204c118586b7c899ccd6c5c';
+const slackEvents = createEventAdapter(slackSigningSecret);
+
+const port = process.env.PORT || 4200;
+
+// slackEvents.on('start', () => {
+//   const params = {
+//     icon_emoji: ':zap:'
+//   };
+//     bot.postMessageToChannel(
+//     'general',
+//     'Just write @HowToBot and something what you want to know!',
+//     params
+//   );
+// });
+
+web.on('message',(event) => {
+  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
 });
+
+
+slackEvents.on('message', (event) => {
+  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+});
+
+(async () => {
+  const server = await slackEvents.start(port);
+  console.log(`Listening for events on ${server.address().port}`);
+})();
+
+
+// slackEvents.on('message', (event) => {
+//   // Oops! This throws a TypeError.
+//   event.notAMethod();
+// });
+
+// // All errors in listeners are caught here. If this weren't caught, the program would terminate.
+// slackEvents.on('error', (error) => {
+//   console.log(error.name); // TypeError
+// });
+
+
+// (async () => {
+//   // console.log()
+//    const conversationId = 'CMWFD5N7Q';
+//   // // Post a message to the channel, and await the result.
+//   // // Find more arguments and details of the response: https://api.slack.com/methods/chat.postMessage
+//   // const result = await web.chat.postMessage({
+//   //   text: 'Hello world!',
+//   //   channel: conversationId,
+//   // });
+
+//   // // The result contains an identifier for the message, `ts`.
+//   // console.log(`Successfully send message ${result.ts} in conversation ${conversationId}`);
+//   const result = await web.chat.meMessage({
+//        text: 'Hello world!',
+//       channel: conversationId,
+//     });
+//   console.log(result);
+// })();
+
+
+
+
 
 // Start Handler
-bot.on('start', () => {
-  const params = {
-    icon_emoji: ':smiley:'
-  };
+// bot.on('start', () => {
+//   const params = {
+//     icon_emoji: ':zap:'
+//   };
+  
 
-  bot.postMessageToChannel(
-    'general',
-    'Get Ready To Laugh With @Jokebot!',
-    params
-  );
-});
+//   bot.postMessageToChannel(
+//     'general',
+//     'Just write @HowToBot and something what you want to know!',
+//     params
+//   );
+// });
 
-// Error Handler
-bot.on('error', err => console.log(err));
+// // Error Handler
+// bot.on('error', err => console.log(err));
 
-// Message Handler
-bot.on('message', data => {
-  if (data.type !== 'message') {
-    return;
-  }
+// // Message Handler
+// bot.on('message', data => {//получаем с api
+//   if (data.type !== 'message') {
+//     return;
+//   }
+//  // console.log(data);
 
-  handleMessage(data.text);
-});
+//   handleMessage(data);
+// });
 
-// Respons to Data
-function handleMessage(message) {
-  if (message.includes(' chucknorris')) {
-    chuckJoke();
-  } else if (message.includes(' yomama')) {
-    yoMamaJoke();
-  } else if (message.includes(' random')) {
-    randomJoke();
-  } else if (message.includes(' help')) {
-    runHelp();
-  }
-}
+// // Respons to Data
+// function handleMessage(message) {
+//   if (message.text.includes(' help')) {
+//     runHelp();
+//   } else if (message.text.includes(' currency')) {
+//     handleCurrency(message);
+//   }
+// }
 
-// Tell a Chuck Norris Joke
-function chuckJoke() {
-  axios.get('http://api.icndb.com/jokes/random').then(res => {
-    const joke = res.data.value.joke;
+// function handleCurrency(message){
+//   axios.get('http://www.nbrb.by/API/ExRates/Rates/145').then(res => {
+//     const params = {
+//       icon_emoji: ':zap:'
+//     };
+//     const userId = message.user;
+//     bot.postMessageToChannel("general", `Today is ${res.data.Date} and 1 USD = ${res.data.Cur_OfficialRate} RUB`, params);
+//   });
+// }
 
-    const params = {
-      icon_emoji: ':laughing:'
-    };
+// // Show Help Text
+// function runHelp() {
+//   const params = {
+//     icon_emoji: ':question:'
+//   };
 
-    bot.postMessageToChannel('general', `Chuck Norris: ${joke}`, params);
-  });
-}
-
-// Tell a Yo Mama Joke
-function yoMamaJoke() {
-  axios.get('http://api.yomomma.info').then(res => {
-    const joke = res.data.joke;
-
-    const params = {
-      icon_emoji: ':laughing:'
-    };
-
-    bot.postMessageToChannel('general', `Yo Mama: ${joke}`, params);
-  });
-}
-
-// Tell a Random Joke
-function randomJoke() {
-  const rand = Math.floor(Math.random() * 2) + 1;
-  if (rand === 1) {
-    chuckJoke();
-  } else if (rand === 2) {
-    yoMamaJoke();
-  }
-}
-
-// Show Help Text
-function runHelp() {
-  const params = {
-    icon_emoji: ':question:'
-  };
-
-  bot.postMessageToChannel(
-    'general',
-    `Type @jokebot with either 'chucknorris', 'yomama' or 'random' to get a joke`,
-    params
-  );
-}
+//   bot.postMessageToChannel(
+//     'general',
+//     `Some info about bot`,
+//     params
+//   );
+// }

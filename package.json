@@ -1,5 +1,5 @@
 {
-  "name": "slack_jokebot",
+  "name": "slack_howtobot",
   "version": "1.0.0",
   "description": "Slackbot that tells random jokes",
   "main": "index.js",
@@ -9,7 +9,8 @@
   "author": "Brad Traversy",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
-    "slackbots": "^1.1.0"
-  }
+    "@slack/events-api": "^2.3.0",
+    "@slack/web-api": "^5.1.0"
+  },
+  "devDependencies": {}
 }
