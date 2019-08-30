@@ -2,15 +2,35 @@
     // "slackbot": "0.0.2",
     // "slackbots": "^1.1.0"
 
- const { WebClient } = require('@slack/web-api')
- const token = 'xoxb-741873925540-742344171200-uG1k97cvdIVWOQCu3YmoEw2G';
- const web = new WebClient(token);
+//  const { WebClient } = require('@slack/web-api')
+  const token = 'xoxb-741873925540-742344171200-uG1k97cvdIVWOQCu3YmoEw2G';
+//  const web = new WebClient(token);
 
-const { createEventAdapter } = require('@slack/events-api');
-const slackSigningSecret = '7c3f6ece3204c118586b7c899ccd6c5c';
-const slackEvents = createEventAdapter(slackSigningSecret);
+// const { createEventAdapter } = require('@slack/events-api');
+ const slackSigningSecret = '7c3f6ece3204c118586b7c899ccd6c5c';
+// const slackEvents = createEventAdapter(slackSigningSecret);
 
-const port = process.env.PORT || 4200;
+const { App } = require('@slack/bolt');
+
+// Initializes your app with your bot token and signing secret
+const app = new App({
+  token: token,
+  signingSecret: slackSigningSecret
+});
+
+(async () => {
+  // Start your app
+  await app.start(process.env.PORT || 3000);
+
+  console.log('⚡️ Bolt app is running!');
+
+  app.message(':wave:', async ({ message, say}) => {
+    say(`Hello, <@${message.user}>`);
+  });
+})();
+
+
+// const port = process.env.PORT || 4200;
 
 // slackEvents.on('start', () => {
 //   const params = {
@@ -23,19 +43,20 @@ const port = process.env.PORT || 4200;
 //   );
 // });
 
-web.on('message',(event) => {
-  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-});
+//WEBAPI EXAMPLE
+// web.on('message',(event) => {
+//   console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+// });
 
 
-slackEvents.on('message', (event) => {
-  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-});
+// slackEvents.on('message', (event) => {
+//   console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+// });
 
-(async () => {
-  const server = await slackEvents.start(port);
-  console.log(`Listening for events on ${server.address().port}`);
-})();
+// (async () => {
+//   const server = await slackEvents.start(port);
+//   console.log(`Listening for events on ${server.address().port}`);
+// })();
 
 
 // slackEvents.on('message', (event) => {
@@ -130,3 +151,4 @@ slackEvents.on('message', (event) => {
 //     params
 //   );
 // }
+
